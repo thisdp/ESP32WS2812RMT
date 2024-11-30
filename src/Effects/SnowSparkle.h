@@ -34,7 +34,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Effect.h"
 #include "Colour.h"
 
-class SnowSparkle : public WS2811Effect {
+class SnowSparkle : public WS2812Effect {
  private:
   class Sparkle {
    public:

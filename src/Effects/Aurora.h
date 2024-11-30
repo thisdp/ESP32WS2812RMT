@@ -38,7 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define W_RANDOM_SEED 11          // Change this seed for a different pattern. If you read from
                                   // an analog input here you can get a different pattern everytime.
 
-class Aurora : public WS2811Effect {
+class Aurora : public WS2812Effect {
   class BorealisWave {
   public:
     explicit BorealisWave(size_t numLeds);

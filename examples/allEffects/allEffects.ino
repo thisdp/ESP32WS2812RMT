@@ -3,15 +3,15 @@
 #include <Arduino.h>
 #include <Ticker.h>
 
-#include <esp32WS2811.h>
+#include <esp32WS2812.h>
 
-WS2811 ws2811(18, 50);
-std::vector<WS2811Effect*> effects;
+WS2812 WS2812(18, 50);
+std::vector<WS2812Effect*> effects;
 Ticker timer;
 
 void nextEffect() {
   Serial.print("starting next effect\n");
-  ws2811.startEffect(effects[random(0, effects.size())]);
+  WS2812.startEffect(effects[random(0, effects.size())]);
 }
 
 void setup() {
@@ -29,7 +29,7 @@ void setup() {
   digitalWrite(23, HIGH);
 
   // start led strip
-  ws2811.begin();
+  WS2812.begin();
 
   // effect starts in 15 seconds...
   timer.attach(15, nextEffect);

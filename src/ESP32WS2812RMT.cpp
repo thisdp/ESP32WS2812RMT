@@ -1,7 +1,7 @@
 /*
 
 Copyright 2017 Neil Kolban
-The WS2811 driver is taken from https://github.com/nkolban/esp32-snippets
+The WS2812 driver is taken from https://github.com/nkolban/esp32-snippets
 
 Copyright 2018 Bert Melis
 
@@ -48,7 +48,7 @@ void setTerminator(rmt_item32_t* item) {
   item->duration1 = 0;
 }
 
-WS2811::WS2811(int dataPin, size_t numLeds, int channel) :
+WS2812::WS2812(int dataPin, size_t numLeds, int channel) :
   _rmtTask(nullptr),
   _smphr(nullptr),
   _channel(static_cast<rmt_channel_t>(channel)),
@@ -59,29 +59,29 @@ WS2811::WS2811(int dataPin, size_t numLeds, int channel) :
     _leds = new Colour[_numLeds];
   }
 
-WS2811::~WS2811() {
+WS2812::~WS2812() {
   stopEffect();
   vTaskDelete(_rmtTask);
   vSemaphoreDelete(_smphr);
   delete[] _leds;
 }
 
-void WS2811::begin() {
+void WS2812::begin() {
   _setupRMT();
   _smphr = xSemaphoreCreateBinary();
   xSemaphoreGive(_smphr);  // release emaphores for first use
   xTaskCreate((TaskFunction_t)&_handleRmt, "rmtTask", 2000, this, 1, &_rmtTask);
 }
 
-size_t WS2811::numLeds() const {
+size_t WS2812::numLeds() const {
   return _numLeds;
 }
 
-void WS2811::show() {
+void WS2812::show() {
   xTaskNotifyGive(_rmtTask);
 }
 
-void WS2811::setPixel(size_t index, Colour colour) {
+void WS2812::setPixel(size_t index, Colour colour) {
   if (xSemaphoreTake(_smphr, 100) == pdTRUE) {
     if (index < _numLeds) {
       _leds[index] = colour;
@@ -94,12 +94,12 @@ void WS2811::setPixel(size_t index, Colour colour) {
   }
 }
 
-void WS2811::setPixel(size_t index, uint8_t red, uint8_t green, uint8_t blue) {
+void WS2812::setPixel(size_t index, uint8_t red, uint8_t green, uint8_t blue) {
   Colour c(red, green, blue);
   setPixel(index, c);
 }
 
-Colour WS2811::getPixel(size_t index) const {
+Colour WS2812::getPixel(size_t index) const {
   if (index < _numLeds) {
     return _leds[index];
   }
@@ -107,7 +107,7 @@ Colour WS2811::getPixel(size_t index) const {
   return c;
 }
 
-void WS2811::setRed(size_t index, uint8_t red) {
+void WS2812::setRed(size_t index, uint8_t red) {
   if (xSemaphoreTake(_smphr, 100) == pdTRUE) {
     if (index < _numLeds) {
       _leds[index].red = red;
@@ -120,7 +120,7 @@ void WS2811::setRed(size_t index, uint8_t red) {
   }
 }
 
-void WS2811::setGreen(size_t index, uint8_t green) {
+void WS2812::setGreen(size_t index, uint8_t green) {
   if (xSemaphoreTake(_smphr, 100) == pdTRUE) {
     if (index < _numLeds) {
       _leds[index].green = green;
@@ -133,7 +133,7 @@ void WS2811::setGreen(size_t index, uint8_t green) {
   }
 }
 
-void WS2811::setBlue(size_t index, uint8_t blue) {
+void WS2812::setBlue(size_t index, uint8_t blue) {
   if (xSemaphoreTake(_smphr, 100) == pdTRUE) {
     if (index < _numLeds) {
       _leds[index].blue = blue;
@@ -146,24 +146,24 @@ void WS2811::setBlue(size_t index, uint8_t blue) {
   }
 }
 
-void WS2811::clearAll() {
+void WS2812::clearAll() {
   Colour c;  // initializes to rgb(0,0,0)
   setAll(c);
 }
 
-void WS2811::setAll(uint8_t red, uint8_t green, uint8_t blue) {
+void WS2812::setAll(uint8_t red, uint8_t green, uint8_t blue) {
   for (size_t i = 0; i < _numLeds; ++i) {
     setPixel(i, red, green, blue);
   }
 }
 
-void WS2811::setAll(Colour colour) {
+void WS2812::setAll(Colour colour) {
   for (size_t i = 0; i < _numLeds; ++i) {
     setPixel(i, colour);
   }
 }
 
-void WS2811::startEffect(WS2811Effect* effect) {
+void WS2812::startEffect(WS2812Effect* effect) {
   if (!effect) {
     log_w("Empty effect ptr: effect not started");
     return;  // avoids check for nullptr on each loop
@@ -175,7 +175,7 @@ void WS2811::startEffect(WS2811Effect* effect) {
   _effect->start(this);
 }
 
-void WS2811::stopEffect() {
+void WS2812::stopEffect() {
   if (!_effect) {
     log_w("No effect available: unable to stop");
     return;
@@ -184,7 +184,7 @@ void WS2811::stopEffect() {
   _effect = nullptr;
 }
 
-void WS2811::_setupRMT() {
+void WS2812::_setupRMT() {
   static rmt_config_t config;
   config.rmt_mode                  = RMT_MODE_TX;
   config.channel                   = _channel;
@@ -202,18 +202,18 @@ void WS2811::_setupRMT() {
   rmt_driver_install(_channel, 0, 0);
 }
 
-void WS2811::_handleRmt(WS2811* ws2811) {
-  static rmt_item32_t* rmtItems = new rmt_item32_t[ws2811->_numLeds * 24 + 1];
+void WS2812::_handleRmt(WS2812* WS2812) {
+  static rmt_item32_t* rmtItems = new rmt_item32_t[WS2812->_numLeds * 24 + 1];
   static rmt_item32_t* currentItem = &rmtItems[0];
 
   while (true) {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  // clears all flags, blocks on next call
     currentItem = &rmtItems[0];
-    if (xSemaphoreTake(ws2811->_smphr, 100) == pdTRUE) {
-      for (size_t i = 0; i < ws2811->_numLeds; ++i) {
-        uint32_t currentPixel = ws2811->_leds[i].green << 16 |
-                                ws2811->_leds[i].red << 8 |
-                                ws2811->_leds[i].blue;
+    if (xSemaphoreTake(WS2812->_smphr, 100) == pdTRUE) {
+      for (size_t i = 0; i < WS2812->_numLeds; ++i) {
+        uint32_t currentPixel = WS2812->_leds[i].green << 16 |
+                                WS2812->_leds[i].red << 8 |
+                                WS2812->_leds[i].blue;
         for (int8_t j = 23; j >= 0; --j) {
           // We have 24 bits of data representing the red, green and blue channels. The value of the
           // 24 bits to output is in the variable current_pixel.  We now need to stream this value
@@ -228,8 +228,8 @@ void WS2811::_handleRmt(WS2811* ws2811) {
         }
       }
       setTerminator(currentItem);  // Write the RMT terminator.
-      ESP_ERROR_CHECK(rmt_write_items(ws2811->_channel, rmtItems, ws2811->_numLeds * 24, 1 /* wait till done */));
-      xSemaphoreGive(ws2811->_smphr);
+      ESP_ERROR_CHECK(rmt_write_items(WS2812->_channel, rmtItems, WS2812->_numLeds * 24, 1 /* wait till done */));
+      xSemaphoreGive(WS2812->_smphr);
     } else {
       log_e("could not write RMT data");
     }
@@ -237,16 +237,16 @@ void WS2811::_handleRmt(WS2811* ws2811) {
 }
 
 /*
-void WS2811::_handleEffect(WS2811* ws2811) {
+void WS2812::_handleEffect(WS2812* WS2812) {
   while (true) {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  // clears all flags, blocks on next call
-    ws2811->_runEffect = true;
-    ws2811->_effect->setup(ws2811, ws2811->_numLeds);
+    WS2812->_runEffect = true;
+    WS2812->_effect->setup(WS2812, WS2812->_numLeds);
     while (true) {
-      ws2811->_effect->run(ws2811, ws2811->_numLeds);
-      if (xSemaphoreTake(ws2811->_effectSmphr, 0) == pdTRUE) {
-        xSemaphoreGive(ws2811->_effectSmphr);  // prevent stopping on next effect
-        ws2811->_runEffect = false;
+      WS2812->_effect->run(WS2812, WS2812->_numLeds);
+      if (xSemaphoreTake(WS2812->_effectSmphr, 0) == pdTRUE) {
+        xSemaphoreGive(WS2812->_effectSmphr);  // prevent stopping on next effect
+        WS2812->_runEffect = false;
         break;
       }
     }

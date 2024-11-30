@@ -27,8 +27,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /**
- * @file esp32WS2811.h
- * @brief API definitions for WS2811 LEDs ESP32's RMT peripheral
+ * @file ESP32WS2812RMT.h
+ * @brief API definitions for WS2812 LEDs ESP32's RMT peripheral
  *
  * This library uses is made for use in the Arduino framework
  * for ESP32.
@@ -54,26 +54,26 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Effects/Colour.h"  // Colour definition
 #include "Effects/Effect.h"  // includes all builtin effects
 
-class WS2811Effect;
+class WS2812Effect;
 
 /**
- * @brief Create a string of ws2811 leds.
+ * @brief Create a string of WS2812 leds.
  */
-class WS2811 {
+class WS2812 {
  public:
   /**
-   * @brief Create a string of ws2811 leds.
+   * @brief Create a string of WS2812 leds.
    * 
    * @param dataPin pin number connected to DATA line of the leds
    * @param numLeds number of leds on the string
    * @param channel RMT channel to use, defaults to channel 0
    */
-  explicit WS2811(int dataPin, size_t numLeds, int channel = RMT_CHANNEL_0);
+  explicit WS2812(int dataPin, size_t numLeds, int channel = RMT_CHANNEL_0);
 
-  virtual ~WS2811();
+  virtual ~WS2812();
 
   /**
-   * @brief Start the WS2811 string, turns off all the leds on this string and waits for 
+   * @brief Start the WS2812 string, turns off all the leds on this string and waits for 
    * further input.
    */
   void begin();
@@ -194,29 +194,29 @@ class WS2811 {
    * @brief Starts an effect
    * 
    * You first have to stop a running effect before starting a new one.
-   * The lib does not delete the WS2811Effect object.
+   * The lib does not delete the WS2812Effect object.
    * 
    * @param effect Pointer to an effect
    */
-  void startEffect(WS2811Effect* effect);
+  void startEffect(WS2812Effect* effect);
 
   /**
    * @brief Stops an effect
    * 
    * This methods stops a running effect. While this call return immideately, the effect only stops after
    * it's `run` functions returns.
-   * The lib does not delete the stopped WS2811Effect object.
+   * The lib does not delete the stopped WS2812Effect object.
    */
   void stopEffect();
 
  private:
   void _setupRMT();
-  static void _handleRmt(WS2811* ws2811);
+  static void _handleRmt(WS2812* WS2812);
   TaskHandle_t _rmtTask;
   SemaphoreHandle_t _smphr;
   rmt_channel_t _channel;
   int _dataPin;
   size_t _numLeds;
   Colour* _leds;
-  WS2811Effect* _effect;
+  WS2812Effect* _effect;
 };

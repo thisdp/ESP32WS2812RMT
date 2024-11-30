@@ -27,7 +27,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Effect.h"
 #include "Colour.h"
 
-class Circus : public WS2811Effect {
+class Circus : public WS2812Effect {
  public:
   explicit Circus(uint32_t interval);
 

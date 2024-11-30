@@ -42,31 +42,31 @@ extern "C" {
 
 #include <Arduino.h>  // delay, random...
 
-#include "../esp32WS2811.h"
+#include "../ESP32WS2812RMT.h"
 
-class WS2811;
+class WS2812;
 
 /**
  * @brief Pure virtual base class to built effects. 
  * 
  * Effects have to be (publicly) inherit from this class.
  */
-class WS2811Effect {
+class WS2812Effect {
  public:
-  WS2811Effect();
-  virtual ~WS2811Effect();
-  void start(WS2811* ledstrip);
+  WS2812Effect();
+  virtual ~WS2812Effect();
+  void start(WS2812* ledstrip);
   void stop();
 
  private:
   virtual void _setup() = 0;
   virtual void _loop() = 0;
   virtual void _cleanup() = 0;
-  static void _effectTask(WS2811Effect* e);
+  static void _effectTask(WS2812Effect* e);
 
  protected:
   TaskHandle_t _task;
-  WS2811* _ledstrip;
+  WS2812* _ledstrip;
 };
 
 #include "Circus.h"

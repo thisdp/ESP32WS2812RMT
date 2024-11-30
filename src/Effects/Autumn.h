@@ -27,7 +27,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Effect.h"
 #include "Colour.h"
 
-class Autumn : public WS2811Effect {
+class Autumn : public WS2812Effect {
  public:
   explicit Autumn(uint32_t steps, uint32_t delay);
 
